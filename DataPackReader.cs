@@ -48,7 +48,7 @@ namespace EIV_DataPack
         public byte[] GetFileData(string filename)
         {
             Reader.BaseStream.Position = ReadedFilesPos;
-            if (!Pack.FileNameToData.TryGetValue(filename, out var data))
+            if (!Pack.FileNameToData.TryGetValue(filename.Replace('\\', '/'), out var data))
             {
                 throw new Exception("File not found inside the Archive!");
             }
@@ -61,7 +61,7 @@ namespace EIV_DataPack
         public int GetFileLen(string filename)
         {
             Reader.BaseStream.Position = ReadedFilesPos;
-            if (!Pack.FileNameToData.TryGetValue(filename, out var data))
+            if (!Pack.FileNameToData.TryGetValue(filename.Replace('\\', '/'), out var data))
             {
                 throw new Exception("File not found inside the Archive!");
             }

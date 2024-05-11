@@ -67,11 +67,13 @@ namespace EIV_DataPack
 
         public void AddFile(string path, string RemovePath = "")
         {
-            OnFileAdded?.Invoke(path.Replace(RemovePath, ""));
-            Pack.FileNames.Add(path.Replace(RemovePath, ""));
+            // We normalize 
+            string filename = path.Replace(RemovePath, "").Replace('\\' ,'/');
+            OnFileAdded?.Invoke(filename);
+            Pack.FileNames.Add(filename);
             var data = File.ReadAllBytes(path);
             data = Pack.Compress(data);
-            Pack.FileNameToMetadata.Add(path.Replace(RemovePath, ""), data);
+            Pack.FileNameToMetadata.Add(filename, data);
         }
 
         public void AddDirectory(string path, bool Recursive = false)
