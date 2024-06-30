@@ -3,7 +3,8 @@ namespace EIV_DataPack
 {
     public class DatapackCreator
     {
-        public const ushort DATAPACK_VERSION = 2;
+        public const ushort DATAPACK_VERSION = 3;
+        public const ushort LAST_SUPPORTED_DATAPACK_VERSION = 2;
         public const string MAGIC = "eivp"; //65 69 76 70
         public const int MagicInt = 1886808421;
         internal IDataPackManipulator Manipulator;
@@ -14,11 +15,13 @@ namespace EIV_DataPack
                 BinaryReader reader = new BinaryReader(stream);
                 if (reader.ReadInt32() != MagicInt)
                     throw new Exception("Wrong file readed!");
-                if (reader.ReadUInt16() != DATAPACK_VERSION)
-                    throw new Exception("Version no longer supported!");
+                ushort version = reader.ReadUInt16();
+                if (version < LAST_SUPPORTED_DATAPACK_VERSION)
+                    throw new Exception("Version no longer supported! Version: " + version);
                 Manipulator = new DataPackReader(reader, new()
                 { 
-                    Compression = (CompressionType)reader.ReadByte()
+                    Compression = (CompressionType)reader.ReadByte(),
+                    Version = version,
                 });
             }
             else
@@ -29,7 +32,8 @@ namespace EIV_DataPack
                 writer.Write((byte)compressionType);
                 Manipulator = new DataPackWriter(writer, new()
                 { 
-                    Compression = compressionType
+                    Compression = compressionType,
+                    Version = DATAPACK_VERSION
                 });
             }
             Manipulator.Open();

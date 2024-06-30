@@ -5,9 +5,11 @@ namespace EIV_DataPack
     public class DataPack
     {
         public CompressionType Compression { get; internal set; }
-        public List<string> FileNames = new();
-        internal Dictionary<string, long> FileNameToData = new();
-        internal Dictionary<string, byte[]> FileNameToMetadata = new();
+        public ushort Version { get; internal set; }
+        public List<string> FileNames = [];
+        internal Dictionary<string, long> FileNameToData = [];
+        internal Dictionary<string, byte[]> FileNameToBytes = [];
+        internal Dictionary<string, FileMetadata> FileNameToMetadata = [];
 
         public byte[] Compress(byte[] data)
         {
