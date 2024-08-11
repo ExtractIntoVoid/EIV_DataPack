@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
     <FileVersion>1.0.3.0</FileVersion>
+    <Description>Library for storing files, datas.</Description>
+    <Copyright>Extract Into Void</Copyright>
+	<IsAotCompatible>True</IsAotCompatible>
+	<IsTrimmable>True</IsTrimmable>
   </PropertyGroup>
-
+	
 </Project>
