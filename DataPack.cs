@@ -2,15 +2,35 @@
 
 namespace EIV_DataPack;
 
+/// <summary>
+/// EIV Version for storing files in one file instead of separate.
+/// </summary>
 public class DataPack
 {
+    /// <summary>
+    /// A <see cref="CompressionType"/> for current <see cref="DataPack"/>
+    /// </summary>
     public CompressionType Compression { get; internal set; }
+    /// <summary>
+    /// Version indicator for current <see cref="DataPack"/>
+    /// </summary>
     public ushort Version { get; internal set; }
+    /// <summary>
+    /// Name of the files that the current <see cref="DataPack"/> holding.
+    /// </summary>
     public List<string> FileNames = [];
+    // Map for FileName->Data position
     internal Dictionary<string, long> FileNameToData = [];
+    // Map for FileName->Data, only used in Writer.
     internal Dictionary<string, byte[]> FileNameToBytes = [];
+    // Map for FileName->FileMetadata
     internal Dictionary<string, FileMetadata> FileNameToMetadata = [];
 
+    /// <summary>
+    /// Compress the input <paramref name="data"/> with the desired <see cref="Compression"/>
+    /// </summary>
+    /// <param name="data">Data as Bytes</param>
+    /// <returns>Compressed <paramref name="data"/></returns>
     public byte[] Compress(byte[] data)
     {
         MemoryStream mem = new(data);
@@ -48,6 +68,11 @@ public class DataPack
         }
     }
 
+    /// <summary>
+    /// DeCompress the input <paramref name="data"/> with the desired <see cref="Compression"/>
+    /// </summary>
+    /// <param name="data">Data as Bytes</param>
+    /// <returns>DeCompressed <paramref name="data"/></returns>
     public byte[] DeCompress(byte[] data)
     {
         MemoryStream mem = new(data);
@@ -86,6 +111,9 @@ public class DataPack
     }
 }
 
+/// <summary>
+/// Compression Types that supported
+/// </summary>
 public enum CompressionType : byte
 {
     None = 0,

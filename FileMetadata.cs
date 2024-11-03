@@ -1,5 +1,8 @@
 ﻿namespace EIV_DataPack;
 
+/// <summary>
+/// File Metadata struct for easy storing the data.
+/// </summary>
 public struct FileMetadata
 {
     public byte UnixMode;
@@ -13,6 +16,9 @@ public struct FileMetadata
     }
 }
 
+/// <summary>
+/// Static class for FileMetadata operation. (Reading and Writing)
+/// </summary>
 public static class FileMetadataExt
 {
     public static void WriteMetadata(this FileMetadata metadata, BinaryWriter binaryWriter)
@@ -26,11 +32,12 @@ public static class FileMetadataExt
 
     public static FileMetadata ReadMetadata(this BinaryReader binaryReader)
     {
-        FileMetadata fileMetadata = new();
-        fileMetadata.UnixMode = binaryReader.ReadByte();
-        fileMetadata.CreationTimeUtc = binaryReader.ReadInt64();
-        fileMetadata.LastAccessTimeUtc = binaryReader.ReadInt64();
-        fileMetadata.LastWriteTimeUtc = binaryReader.ReadInt64();
-        return fileMetadata;
+        return new()
+        {
+            UnixMode = binaryReader.ReadByte(),
+            CreationTimeUtc = binaryReader.ReadInt64(),
+            LastAccessTimeUtc = binaryReader.ReadInt64(),
+            LastWriteTimeUtc = binaryReader.ReadInt64()
+        };
     }
 }

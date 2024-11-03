@@ -5,11 +5,13 @@ namespace EIV_DataPack;
 
 public class DataPackWriter : IDataPackManipulator
 {
+    // Delegates for Writer events.
     public delegate void OnFileAddedDelegate(string FileName);
     public delegate void OnDataAddedDelegate(string DataName);
     public delegate void OnDirectoryAddedDelegate(string DirectoryName);
     public delegate void OnSavedDelegate();
 
+    // Events to 3rd Party hooks.
     public event OnFileAddedDelegate? OnFileAdded;
     public event OnDataAddedDelegate? OnDataAdded;
     public event OnDirectoryAddedDelegate? OnDirectoryAdded;
@@ -35,6 +37,9 @@ public class DataPackWriter : IDataPackManipulator
         Writer.Dispose();
     }
 
+    /// <summary>
+    /// Save the underlaying DataPack
+    /// </summary>
     public void Save()
     {
         long metadata_starter_post = 0;
@@ -74,7 +79,7 @@ public class DataPackWriter : IDataPackManipulator
         }
         Writer.Write((long)-1); // this is here if we add more stuff (next indicator for reader!)
         var tmp_pos = Writer.BaseStream.Position;
-        Console.WriteLine("posbefore_next_blob: " + tmp_pos);
+        //Console.WriteLine("posbefore_next_blob: " + tmp_pos);
         Writer.BaseStream.Position = metadata_starter_post;
         Writer.Write(tmp_pos);
         Writer.BaseStream.Position = tmp_pos;
@@ -84,7 +89,7 @@ public class DataPackWriter : IDataPackManipulator
             var name = Encoding.UTF8.GetBytes(item.Key);
             Writer.Write(name.Length);
             Writer.Write(name);
-            Console.WriteLine(item.Value.ToString());
+            //Console.WriteLine(item.Value.ToString());
             item.Value.WriteMetadata(Writer);
         }
 
@@ -95,15 +100,18 @@ public class DataPackWriter : IDataPackManipulator
         OnSaved?.Invoke();
     }
 
+    /// <summary>
+    /// Adding file into the DataPack.
+    /// </summary>
+    /// <param name="path">Path of the File</param>
+    /// <param name="RemovePath">Path to be removed</param>
     public void AddFile(string path, string RemovePath = "")
     {
         // We normalize
         string filename = path;
         if (RemovePath != "")
             filename = path.Replace(RemovePath, "").Replace('\\', '/');
-        OnFileAdded?.Invoke(filename);
         Pack.FileNames.Add(filename);
-        var data = File.ReadAllBytes(path);
         FileMetadata fileMetadata = new()
         { 
             UnixMode = 0,
@@ -116,10 +124,15 @@ public class DataPackWriter : IDataPackManipulator
             fileMetadata.UnixMode = (byte)File.GetUnixFileMode(path);
         }
         Pack.FileNameToMetadata.Add(filename, fileMetadata);
-        data = Pack.Compress(data);
-        Pack.FileNameToBytes.Add(filename, data);
+        Pack.FileNameToBytes.Add(filename, Pack.Compress(File.ReadAllBytes(path)));
+        OnFileAdded?.Invoke(filename);
     }
 
+    /// <summary>
+    /// Add Directory with included files in the DataPack
+    /// </summary>
+    /// <param name="path">Path to Files</param>
+    /// <param name="Recursive">Should include all directories inside or only selected</param>
     public void AddDirectory(string path, bool Recursive = false)
     {
         var files = Directory.GetFiles(path,"*", Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
@@ -130,16 +143,25 @@ public class DataPackWriter : IDataPackManipulator
         OnDirectoryAdded?.Invoke(path);
     }
 
+    /// <summary>
+    /// Add String Data into the DataPack
+    /// </summary>
+    /// <param name="dataname">Unique Data Name</param>
+    /// <param name="data">Data to be saved</param>
     public void AddData(string dataname, string data)
     {
         AddData(dataname, Encoding.UTF8.GetBytes(data));
     }
 
+    /// <summary>
+    /// Add ByteArray Data into the DataPack
+    /// </summary>
+    /// <param name="dataname">Unique Data Name</param>
+    /// <param name="data">Data to be saved</param>
     public void AddData(string dataname, byte[] data)
     {
-        OnDataAdded?.Invoke(dataname);
         Pack.FileNames.Add(dataname);
-        data = Pack.Compress(data);
-        Pack.FileNameToBytes.Add(dataname, data);
+        Pack.FileNameToBytes.Add(dataname, Pack.Compress(data));
+        OnDataAdded?.Invoke(dataname);
     }
 }
