@@ -8,29 +8,24 @@
 		<FileVersion>$(AssemblyVersion)</FileVersion>
 		<Description>Library for storing files, datas.</Description>
 		<Copyright>Extract Into Void</Copyright>
-		<IsAotCompatible>True</IsAotCompatible>
-		<IsTrimmable>True</IsTrimmable>
+		<IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">true</IsAotCompatible>
+		<IsTrimmable Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">True</IsTrimmable>
 		<Title>EIV Data Pack</Title>
 		<Company>ExtractIntoVoid</Company>
 		<Authors>ExtractIntoVoid</Authors>
 		<PackageProjectUrl>https://github.com/ExtractIntoVoid/EIV_DataPack</PackageProjectUrl>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
-		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<Version>$(AssemblyVersion)</Version>
 		<LangVersion>12.0</LangVersion>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	</PropertyGroup>
 
-
 	<ItemGroup>
-		<None Update="LICENSE">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
-		<None Update="README.md">
-			<Pack>True</Pack>
-			<PackagePath>\</PackagePath>
-		</None>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+		<None Include="LICENSE" Pack="true" PackagePath="\" />
 	</ItemGroup>
-	
+
 </Project>
