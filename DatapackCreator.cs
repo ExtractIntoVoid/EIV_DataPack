@@ -1,49 +1,43 @@
-﻿namespace EIV_DataPack;
+﻿using EIV_DataPack.Compressions;
+using EIV_DataPack.Interfaces;
+
+namespace EIV_DataPack;
 
 /// <summary>
 /// 
 /// </summary>
 public class DatapackCreator
 {
-    // Current DataPack Version
-    public const ushort DATAPACK_VERSION = 3;
-    // Last Supported DataPack Version
-    public const ushort LAST_SUPPORTED_DATAPACK_VERSION = 2;
-    // File Magic as string
-    public const string MAGIC = "eivp"; //65 69 76 70
-    // File Magic as Int
-    public const int MagicInt = 1886808421;
     // DataPack Manipulator, for reading and writing
     internal IDataPackManipulator Manipulator;
-    internal DatapackCreator(Stream stream, bool IsRead, CompressionType compressionType = CompressionType.Deflate)
+    internal DatapackCreator(Stream stream)
     {
-        if (IsRead)
+        BinaryReader reader = new(stream);
+        if (reader.ReadInt32() != Consts.MagicInt)
+            throw new Exception("Magic MissMatch!");
+        ushort version = reader.ReadUInt16();
+        if (version < Consts.MIN_SUPPORTED_VERSION)
+            throw new Exception($"Version no longer supported! Version: {version}");
+        CompressionType compressionType = (CompressionType)reader.ReadByte();
+        byte extra = 0;
+        if (compressionType == CompressionType.Custom)
         {
-            BinaryReader reader = new BinaryReader(stream);
-            if (reader.ReadInt32() != MagicInt)
-                throw new Exception("Wrong file readed!");
-            ushort version = reader.ReadUInt16();
-            if (version < LAST_SUPPORTED_DATAPACK_VERSION)
-                throw new Exception("Version no longer supported! Version: " + version);
-            Manipulator = new DataPackReader(reader, new()
-            { 
-                Compression = (CompressionType)reader.ReadByte(),
-                Version = version,
-            });
+            if (version < Consts.CUSTOMCOMPRESSION_VERSION)
+                throw new Exception($"Custom compression not supported! Version: {version}");
+            extra = reader.ReadByte();
         }
-        else
-        {
-            BinaryWriter writer = new BinaryWriter(stream);
-            writer.Write(MagicInt);
-            writer.Write(DATAPACK_VERSION);
-            writer.Write((byte)compressionType);
-            Manipulator = new DataPackWriter(writer, new()
-            { 
-                Compression = compressionType,
-                Version = DATAPACK_VERSION
-            });
-        }
-        Manipulator.Open();
+        Manipulator = new DataPackReader(reader, new(version, Compressors.GetCompressor(compressionType, extra)));
+    }
+
+    internal DatapackCreator(Stream stream, CompressionType compressionType = CompressionType.Deflate, byte extra = 0)
+    {
+        BinaryWriter writer = new(stream);
+        writer.Write(Consts.MagicInt);
+        writer.Write(Consts.CURRENT_VERSION);
+        writer.Write((byte)compressionType);
+        if (compressionType == CompressionType.Custom)
+            writer.Write(extra);
+        Manipulator = new DataPackWriter(writer, new(Consts.CURRENT_VERSION, Compressors.GetCompressor(compressionType, extra)));
     }
 
     /// <summary>
@@ -52,9 +46,9 @@ public class DatapackCreator
     /// <param name="Filename">Name of the File</param>
     /// <param name="compressionType">Type of Compression</param>
     /// <returns>The created Datapack</returns>
-    public static DatapackCreator Create(string Filename, CompressionType compressionType = CompressionType.Deflate)
+    public static DatapackCreator Create(string Filename, CompressionType compressionType = CompressionType.Deflate, byte extra = 0)
     {
-        return Create(File.OpenWrite(Filename), compressionType);
+        return Create(File.OpenWrite(Filename), compressionType, extra);
     }
 
     /// <summary>
@@ -63,9 +57,9 @@ public class DatapackCreator
     /// <param name="fileStream">Stream of the File for writing</param>
     /// <param name="compressionType">Type of Compression</param>
     /// <returns>The created Datapack</returns>
-    public static DatapackCreator Create(FileStream fileStream, CompressionType compressionType = CompressionType.Deflate)
+    public static DatapackCreator Create(FileStream fileStream, CompressionType compressionType = CompressionType.Deflate, byte extra = 0)
     {
-        return new DatapackCreator(fileStream, false, compressionType);
+        return new DatapackCreator(fileStream, compressionType, extra);
     }
 
     /// <summary>
@@ -85,25 +79,17 @@ public class DatapackCreator
     /// <returns>The opened Datapack</returns>
     public static DatapackCreator Read(FileStream fileStream)
     {
-        return new DatapackCreator(fileStream, true);
+        return new DatapackCreator(fileStream);
     }
 
     /// <summary>
-    /// Check the DataPack is Readable
+    /// Open a File for Reading.
     /// </summary>
-    /// <returns>True if Readable</returns>
-    public bool CanRead()
+    /// <param name="Filename">Name of the File</param>
+    /// <returns>The opened Datapack</returns>
+    public static DatapackCreator Read(byte[] Data)
     {
-        return Manipulator is DataPackReader reader && reader != null;
-    }
-
-    /// <summary>
-    /// Check the DataPack is Writable
-    /// </summary>
-    /// <returns>True if Writable</returns>
-    public bool CanWrite()
-    {
-        return Manipulator is DataPackWriter writer && writer != null;
+        return new DatapackCreator(new MemoryStream(Data));
     }
 
     /// <summary>
@@ -112,7 +98,7 @@ public class DatapackCreator
     /// <returns>Null if not readable</returns>
     public DataPackReader? GetReader()
     {
-        if (!CanRead())
+        if (!Manipulator.CanRead)
             return null;
         return Manipulator as DataPackReader;
     }
@@ -123,7 +109,7 @@ public class DatapackCreator
     /// <returns>Null if not writable</returns>
     public DataPackWriter? GetWriter()
     {
-        if (!CanWrite())
+        if (!Manipulator.CanWrite)
             return null;
         return Manipulator as DataPackWriter;
     }

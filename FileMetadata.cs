@@ -1,43 +1,46 @@
 ﻿namespace EIV_DataPack;
 
 /// <summary>
-/// File Metadata struct for easy storing the data.
+/// File Metadata struct for easy storing the Meta information.
 /// </summary>
 public struct FileMetadata
 {
+    public FileMetadata() { }
+
+    public bool UseMetadata;
     public byte UnixMode;
     public long CreationTimeUtc;
     public long LastAccessTimeUtc;
     public long LastWriteTimeUtc;
 
-    public override string ToString()
+    public readonly override string ToString()
     {
-        return $"{UnixMode} {CreationTimeUtc} {LastAccessTimeUtc} {LastWriteTimeUtc}";
+        return $"{UseMetadata} {UnixMode} {CreationTimeUtc} {LastAccessTimeUtc} {LastWriteTimeUtc}";
     }
-}
 
-/// <summary>
-/// Static class for FileMetadata operation. (Reading and Writing)
-/// </summary>
-public static class FileMetadataExt
-{
-    public static void WriteMetadata(this FileMetadata metadata, BinaryWriter binaryWriter)
+    public readonly void WriteMetadata(BinaryWriter binaryWriter, ushort version = 4)
     {
-        binaryWriter.Write(metadata.UnixMode);
-        binaryWriter.Write(metadata.CreationTimeUtc);
-        binaryWriter.Write(metadata.LastAccessTimeUtc);
-        binaryWriter.Write(metadata.LastWriteTimeUtc);
+        if (version != 3)
+            binaryWriter.Write(UseMetadata);
+        if (UseMetadata | version == 3)
+        {
+            binaryWriter.Write(UnixMode);
+            binaryWriter.Write(CreationTimeUtc);
+            binaryWriter.Write(LastAccessTimeUtc);
+            binaryWriter.Write(LastWriteTimeUtc);
+        }
         binaryWriter.Flush();
     }
 
-    public static FileMetadata ReadMetadata(this BinaryReader binaryReader)
+    public FileMetadata(BinaryReader binaryReader, ushort version = 4)
     {
-        return new()
+        UseMetadata = version != 3 || binaryReader.ReadBoolean();
+        if (UseMetadata)
         {
-            UnixMode = binaryReader.ReadByte(),
-            CreationTimeUtc = binaryReader.ReadInt64(),
-            LastAccessTimeUtc = binaryReader.ReadInt64(),
-            LastWriteTimeUtc = binaryReader.ReadInt64()
-        };
+            UnixMode = binaryReader.ReadByte();
+            CreationTimeUtc = binaryReader.ReadInt64();
+            LastAccessTimeUtc = binaryReader.ReadInt64();
+            LastWriteTimeUtc = binaryReader.ReadInt64();
+        }
     }
 }
