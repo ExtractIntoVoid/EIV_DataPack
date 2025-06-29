@@ -47,6 +47,9 @@ public class DataPack
         }
     }
 
+    /// <summary>
+    /// Setting of the DataPack.
+    /// </summary>
     public PackSettings Settings { get; } = new();
 
     internal IPack Pack { get; }

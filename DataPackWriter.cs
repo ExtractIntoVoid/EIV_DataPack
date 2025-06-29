@@ -11,22 +11,54 @@ namespace EIV_DataPack;
 public class DataPackWriter(BinaryWriter writer, DataPack dataPack) : IDataPackManipulator
 {
     // Delegates for Writer events.
+    /// <summary>
+    /// Delegate for adding a File with the Writer.
+    /// </summary>
+    /// <param name="FileName">Name of the file.</param>
     public delegate void OnFileAddedDelegate(string FileName);
+    /// <summary>
+    /// Delegate for adding a Data with the Writer.
+    /// </summary>
+    /// <param name="DataName">Name of the data.</param>
     public delegate void OnDataAddedDelegate(string DataName);
+    /// <summary>
+    /// Delegate for adding a Directory with the Writer.
+    /// </summary>
+    /// <param name="DirectoryName">Name of the directory.</param>
     public delegate void OnDirectoryAddedDelegate(string DirectoryName);
+    /// <summary>
+    /// Delegate for saving with the writer.
+    /// </summary>
     public delegate void OnSavedDelegate();
 
     // Events to 3rd Party hooks.
+
+    /// <summary>
+    /// Called when a file added.
+    /// </summary>
     public event OnFileAddedDelegate? OnFileAdded;
+    /// <summary>
+    /// Caled when a data added.
+    /// </summary>
     public event OnDataAddedDelegate? OnDataAdded;
+    /// <summary>
+    /// Caled when a directory added.
+    /// </summary>
     public event OnDirectoryAddedDelegate? OnDirectoryAdded;
+    /// <summary>
+    /// Called when a File Saved.
+    /// </summary>
     public event OnSavedDelegate? OnSaved;
 
     private readonly BinaryWriter Writer = writer;
+    /// <inheritdoc/>
     public DataPack Pack { get; } = dataPack;
+    /// <inheritdoc/>
     public bool CanRead => false;
+    /// <inheritdoc/>
     public bool CanWrite => true;
 
+    /// <inheritdoc/>
     public void Close()
     {
         Writer.Flush();
@@ -50,6 +82,7 @@ public class DataPackWriter(BinaryWriter writer, DataPack dataPack) : IDataPackM
     /// </summary>
     /// <param name="path">Path of the File</param>
     /// <param name="RemovePath">Path to be removed</param>
+    /// <param name="extraData">Extra data to associate with the <paramref name="path"/>.</param>
     public void AddFile(string path, string RemovePath = "", byte[]? extraData = null)
     {
         // We normalize
@@ -91,6 +124,7 @@ public class DataPackWriter(BinaryWriter writer, DataPack dataPack) : IDataPackM
     /// </summary>
     /// <param name="path">Path to Files</param>
     /// <param name="Recursive">Should include all directories inside or only selected</param>
+    /// <param name="extraData">Extra data to associate with the <paramref name="path"/>.</param>
     public void AddDirectory(string path, bool Recursive = false, byte[]? extraData = null)
     {
         var files = Directory.GetFiles(path,"*.*", Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
@@ -106,6 +140,7 @@ public class DataPackWriter(BinaryWriter writer, DataPack dataPack) : IDataPackM
     /// </summary>
     /// <param name="dataname">Unique Data Name</param>
     /// <param name="data">Data to be saved</param>
+    /// <param name="extraData">Extra data to associate with the <paramref name="dataname"/>.</param>
     public void AddData(string dataname, string data, byte[]? extraData = null)
     {
         AddData(dataname, Encoding.UTF8.GetBytes(data), extraData);
@@ -116,6 +151,7 @@ public class DataPackWriter(BinaryWriter writer, DataPack dataPack) : IDataPackM
     /// </summary>
     /// <param name="dataname">Unique Data Name</param>
     /// <param name="data">Data to be saved</param>
+    /// <param name="extraData">Extra data to associate with the <paramref name="dataname"/>.</param>
     public void AddData(string dataname, byte[] data, byte[]? extraData = null)
     {
         InternalFileV4 internalFile = new()

@@ -4,12 +4,18 @@ using System.IO.Compression;
 
 namespace EIV_DataPack.Compressions;
 
+/// <summary>
+/// Compressor for <see cref="CompressionType.Brotli"/>
+/// </summary>
 public class BrotliCompressor : ICompressor
 {
+    /// <inheritdoc/>
     public CompressionType Type => CompressionType.Brotli;
 
+    /// <inheritdoc/>
     public byte CustomCompressionType => 0;
 
+    /// <inheritdoc/>
     public byte[] Compress(byte[] data)
     {
         using MemoryStream mem = new(data);
@@ -21,6 +27,7 @@ public class BrotliCompressor : ICompressor
         return out_stream.ToArray();
     }
 
+    /// <inheritdoc/>
     public byte[] Decompress(byte[] data)
     {
         MemoryStream mem = new(data);

@@ -4,12 +4,18 @@ using System.IO.Compression;
 
 namespace EIV_DataPack.Compressions;
 
+/// <summary>
+/// Compressor for <see cref="CompressionType.ZLib"/>
+/// </summary>
 public class ZLibCompressor : ICompressor
 {
+    /// <inheritdoc/>
     public CompressionType Type => CompressionType.ZLib;
 
+    /// <inheritdoc/>
     public byte CustomCompressionType => 0;
 
+    /// <inheritdoc/>
     public byte[] Compress(byte[] data)
     {
         using MemoryStream mem = new(data);
@@ -21,6 +27,7 @@ public class ZLibCompressor : ICompressor
         return out_stream.ToArray();
     }
 
+    /// <inheritdoc/>
     public byte[] Decompress(byte[] data)
     {
         MemoryStream mem = new(data);

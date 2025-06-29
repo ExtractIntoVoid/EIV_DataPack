@@ -3,12 +3,18 @@ using System.IO.Compression;
 
 namespace EIV_DataPack.Compressions;
 
+/// <summary>
+/// Compressor for <see cref="CompressionType.GZip"/>
+/// </summary>
 public class GZipCompressor : ICompressor
 {
+    /// <inheritdoc/>
     public CompressionType Type => CompressionType.GZip;
 
+    /// <inheritdoc/>
     public byte CustomCompressionType => 0;
 
+    /// <inheritdoc/>
     public byte[] Compress(byte[] data)
     {
         using MemoryStream mem = new(data);
@@ -20,6 +26,7 @@ public class GZipCompressor : ICompressor
         return out_stream.ToArray();
     }
 
+    /// <inheritdoc/>
     public byte[] Decompress(byte[] data)
     {
         MemoryStream mem = new(data);

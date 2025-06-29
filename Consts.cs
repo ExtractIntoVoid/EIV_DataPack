@@ -1,5 +1,8 @@
 ﻿namespace EIV_DataPack;
 
+/// <summary>
+/// Constants Values.
+/// </summary>
 public static class Consts
 {
     /// <summary>
@@ -12,8 +15,14 @@ public static class Consts
     /// </summary>
     public const ushort MIN_SUPPORTED_VERSION = 2;
 
-    public const ushort METADATA_VERSION = 2;
+    /// <summary>
+    /// Metadata Version introduced.
+    /// </summary>
+    public const ushort METADATA_VERSION = 3;
 
+    /// <summary>
+    /// Custom Compression introduced.
+    /// </summary>
     public const ushort CUSTOMCOMPRESSION_VERSION = 4;
 
     /// <summary>

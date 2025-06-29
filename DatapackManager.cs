@@ -4,13 +4,13 @@ using EIV_DataPack.Interfaces;
 namespace EIV_DataPack;
 
 /// <summary>
-/// 
+/// Manages the reading and writing of Data Pack.
 /// </summary>
-public class DatapackCreator
+public class DatapackManager
 {
     // DataPack Manipulator, for reading and writing
     internal IDataPackManipulator Manipulator;
-    internal DatapackCreator(Stream stream)
+    internal DatapackManager(Stream stream)
     {
         BinaryReader reader = new(stream);
         if (reader.ReadInt32() != Consts.MagicInt)
@@ -29,7 +29,7 @@ public class DatapackCreator
         Manipulator = new DataPackReader(reader, new(version, Compressors.GetCompressor(compressionType, extra)));
     }
 
-    internal DatapackCreator(Stream stream, CompressionType compressionType = CompressionType.Deflate, byte extra = 0)
+    internal DatapackManager(Stream stream, CompressionType compressionType = CompressionType.Deflate, byte extra = 0)
     {
         BinaryWriter writer = new(stream);
         writer.Write(Consts.MagicInt);
@@ -45,8 +45,9 @@ public class DatapackCreator
     /// </summary>
     /// <param name="Filename">Name of the File</param>
     /// <param name="compressionType">Type of Compression</param>
+    /// <param name="extra">Extra data.</param>
     /// <returns>The created Datapack</returns>
-    public static DatapackCreator Create(string Filename, CompressionType compressionType = CompressionType.Deflate, byte extra = 0)
+    public static DatapackManager Create(string Filename, CompressionType compressionType = CompressionType.Deflate, byte extra = 0)
     {
         return Create(File.OpenWrite(Filename), compressionType, extra);
     }
@@ -56,10 +57,11 @@ public class DatapackCreator
     /// </summary>
     /// <param name="fileStream">Stream of the File for writing</param>
     /// <param name="compressionType">Type of Compression</param>
+    /// <param name="extra">Extra data.</param>
     /// <returns>The created Datapack</returns>
-    public static DatapackCreator Create(FileStream fileStream, CompressionType compressionType = CompressionType.Deflate, byte extra = 0)
+    public static DatapackManager Create(FileStream fileStream, CompressionType compressionType = CompressionType.Deflate, byte extra = 0)
     {
-        return new DatapackCreator(fileStream, compressionType, extra);
+        return new DatapackManager(fileStream, compressionType, extra);
     }
 
     /// <summary>
@@ -67,7 +69,7 @@ public class DatapackCreator
     /// </summary>
     /// <param name="Filename">Name of the File</param>
     /// <returns>The opened Datapack</returns>
-    public static DatapackCreator Read(string Filename)
+    public static DatapackManager Read(string Filename)
     {
         return Read(File.OpenRead(Filename));
     }
@@ -77,19 +79,19 @@ public class DatapackCreator
     /// </summary>
     /// <param name="fileStream">Stream of the File for reading</param>
     /// <returns>The opened Datapack</returns>
-    public static DatapackCreator Read(FileStream fileStream)
+    public static DatapackManager Read(FileStream fileStream)
     {
-        return new DatapackCreator(fileStream);
+        return new DatapackManager(fileStream);
     }
 
     /// <summary>
-    /// Open a File for Reading.
+    /// Reading the file from <paramref name="Data"/>.
     /// </summary>
-    /// <param name="Filename">Name of the File</param>
+    /// <param name="Data">Data of the File</param>
     /// <returns>The opened Datapack</returns>
-    public static DatapackCreator Read(byte[] Data)
+    public static DatapackManager Read(byte[] Data)
     {
-        return new DatapackCreator(new MemoryStream(Data));
+        return new DatapackManager(new MemoryStream(Data));
     }
 
     /// <summary>

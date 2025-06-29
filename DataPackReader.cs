@@ -11,16 +11,19 @@ namespace EIV_DataPack;
 public class DataPackReader(BinaryReader reader, DataPack dataPack) : IDataPackManipulator
 {
     private readonly BinaryReader Reader = reader;
+    /// <inheritdoc/>
     public DataPack Pack { get; } = dataPack;
 
     /// <summary>
     /// Should Throw error or just simply return non breaking values. (0, Empty Array)
     /// </summary>
     public bool ShouldThrow = false;
+    /// <inheritdoc/>
     public bool CanRead => true;
-
+    /// <inheritdoc/>
     public bool CanWrite => false;
 
+    /// <inheritdoc/>
     public void Close()
     {
         Reader.Close();
@@ -30,7 +33,6 @@ public class DataPackReader(BinaryReader reader, DataPack dataPack) : IDataPackM
     /// <summary>
     /// Reading the File Names inside the DataPack.
     /// </summary>
-    /// <param name="ShoulReadMetadata">Indicating should read the File Metadata</param>
     public void ReadFileNames()
     {
         Pack.Pack.Read(Reader, false);

@@ -36,7 +36,7 @@ internal class InternalPackV3(PackSettings settings) : IPack
                 Console.WriteLine("Seems like your .eivp file corrupt!");
                 continue;
             }
-            file.Metadata = new(reader);
+            file.Metadata = new(reader, Version);
         }
         if (!NoData)
         {
@@ -84,7 +84,7 @@ internal class InternalPackV3(PackSettings settings) : IPack
             var name = Encoding.UTF8.GetBytes(item.Name);
             writer.Write(name.Length);
             writer.Write(name);
-            item.Metadata.WriteMetadata(writer);
+            item.Metadata.WriteMetadata(writer, Version);
         }
     }
 }
