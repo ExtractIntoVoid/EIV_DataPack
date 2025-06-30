@@ -2,10 +2,20 @@
 
 namespace EIV_DataPack.StringId;
 
+/// <summary>
+/// A simple <see cref="Dictionary{TKey, TValue}"/> for storing and retrieving strings.
+/// </summary>
 public class StringIdDict : IGetStringId, IFromStringId
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public Dictionary<string, int> StringIds = [];
+
+    /// <inheritdoc/>
     public int NotExistsId { get; } = 0;
+
+    /// <inheritdoc/>
     public string FromStringId(int id)
     {
         if (id == NotExistsId)
@@ -16,6 +26,7 @@ public class StringIdDict : IGetStringId, IFromStringId
         return stringId.Key;
     }
 
+    /// <inheritdoc/>
     public int GetStringId(string str)
     {
         if (StringIds.TryGetValue(str, out int id))
