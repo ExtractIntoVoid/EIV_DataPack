@@ -1,7 +1,8 @@
 ﻿using EIV_DataPack.Interfaces;
+using EIV_DataPack.Pack;
 using System.Text;
 
-namespace EIV_DataPack.Pack;
+namespace EIV_DataPack.PackFile;
 
 internal class InternalPackV3(PackSettings settings) : IPack
 {

@@ -1,5 +1,6 @@
 ﻿using EIV_DataPack.Interfaces;
 using EIV_DataPack.Pack;
+using EIV_DataPack.PackFile;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -87,7 +88,7 @@ public class DataPackWriter(BinaryWriter writer, DataPack dataPack) : IDataPackM
     {
         // We normalize
         string filename = path;
-        if (RemovePath != "")
+        if (RemovePath != string.Empty)
             filename = path.Replace(RemovePath, string.Empty).Replace('\\', '/');
         FileMetadata fileMetadata = new()
         { 

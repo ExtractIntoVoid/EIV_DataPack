@@ -42,7 +42,7 @@ public struct FileMetadata
     /// </summary>
     /// <param name="binaryWriter">Input writer to write the data.</param>
     /// <param name="version">DataPack version.</param>
-    public readonly void WriteMetadata(BinaryWriter binaryWriter, ushort version = 4)
+    public readonly void WriteMetadata(BinaryWriter binaryWriter, ushort version = Consts.CURRENT_VERSION)
     {
         if (version != Consts.METADATA_VERSION)
             binaryWriter.Write(UseMetadata);
@@ -61,7 +61,7 @@ public struct FileMetadata
     /// </summary>
     /// <param name="binaryReader">Reader that reads the data from.</param>
     /// <param name="version">DataPack version.</param>
-    public FileMetadata(BinaryReader binaryReader, ushort version = 4)
+    public FileMetadata(BinaryReader binaryReader, ushort version = Consts.CURRENT_VERSION)
     {
         UseMetadata = version != Consts.METADATA_VERSION || binaryReader.ReadBoolean();
         if (UseMetadata)

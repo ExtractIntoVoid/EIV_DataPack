@@ -1,6 +1,6 @@
 ﻿using EIV_DataPack.Interfaces;
 
-namespace EIV_DataPack.Pack;
+namespace EIV_DataPack.PackFile;
 
 internal class InternalFileV3 : IPackFile, IPackMetadata
 {

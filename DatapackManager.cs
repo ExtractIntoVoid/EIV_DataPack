@@ -26,7 +26,7 @@ public class DatapackManager
                 throw new Exception($"Custom compression not supported! Version: {version}");
             extra = reader.ReadByte();
         }
-        Manipulator = new DataPackReader(reader, new(version, Compressors.GetCompressor(compressionType, extra)));
+        Manipulator = new DataPackReader(reader, new(version, compressionType, extra));
     }
 
     internal DatapackManager(Stream stream, CompressionType compressionType = CompressionType.Deflate, byte extra = 0)
@@ -37,7 +37,7 @@ public class DatapackManager
         writer.Write((byte)compressionType);
         if (compressionType == CompressionType.Custom)
             writer.Write(extra);
-        Manipulator = new DataPackWriter(writer, new(Consts.CURRENT_VERSION, Compressors.GetCompressor(compressionType, extra)));
+        Manipulator = new DataPackWriter(writer, new(Consts.CURRENT_VERSION, compressionType, extra));
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 ﻿using EIV_DataPack.Compressions;
 using EIV_DataPack.Interfaces;
+using EIV_DataPack.PackFile;
 
 namespace EIV_DataPack.Pack;
 
@@ -8,7 +9,12 @@ namespace EIV_DataPack.Pack;
 /// </summary>
 public class DataPack
 {
-    public DataPack(ushort version, ICompressor compressor)
+    /// <summary>
+    /// Creating a new DataPack.
+    /// </summary>
+    /// <param name="version"></param>
+    /// <param name="compressor"></param>
+    internal DataPack(ushort version, ICompressor compressor)
     {
         Version = version;
         Compressor = compressor;
@@ -23,7 +29,7 @@ public class DataPack
         };
     }
 
-    public DataPack(ushort version, CompressionType compressionType = CompressionType.Deflate, byte extra = 0) : this(version, Compressors.GetCompressor(compressionType, extra)) { }
+    internal DataPack(ushort version, CompressionType compressionType = CompressionType.Deflate, byte extra = 0) : this(version, Compressors.GetCompressor(compressionType, extra)) { }
 
 
     /// <summary>

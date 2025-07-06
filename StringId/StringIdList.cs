@@ -13,7 +13,7 @@ public class StringIdList : IGetStringId, IFromStringId
     public List<string> StringIds = [];
 
     /// <inheritdoc/>
-    public int NotExistsId { get; } = -1;
+    public int NotExistsId => -1;
 
     /// <inheritdoc/>
     public string FromStringId(int id)

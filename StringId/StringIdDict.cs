@@ -8,12 +8,12 @@ namespace EIV_DataPack.StringId;
 public class StringIdDict : IGetStringId, IFromStringId
 {
     /// <summary>
-    /// 
+    /// List of string. (String to Id)
     /// </summary>
     public Dictionary<string, int> StringIds = [];
 
     /// <inheritdoc/>
-    public int NotExistsId { get; } = 0;
+    public int NotExistsId => 0;
 
     /// <inheritdoc/>
     public string FromStringId(int id)

@@ -1,6 +1,6 @@
 ﻿using EIV_DataPack.Interfaces;
 
-namespace EIV_DataPack.Pack;
+namespace EIV_DataPack.PackFile;
 
 /// <summary>
 /// DataPack Version 1 never existed!
